@@ -1,10 +1,8 @@
-<!-- README.md is written by hand; edit here directly. -->
 
-# SurInsulot <img src="man/figures/logo.png" align="right" height="130" alt="SurInsulot hex logo" />
+# SurInsulot <img src="man/figures/logo.png" align="right" height="100" alt="SurInsulot hex logo" />
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/ZanettaT/SurInsulot/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ZanettaT/SurInsulot/actions/workflows/R-CMD-check.yaml)
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
 
@@ -21,8 +19,7 @@ whole panel from a data frame.
 remotes::install_github("ZanettaT/SurInsulot")
 ```
 
-SurInsulot has no hard dependencies and bundles everything it needs, including
-the HOMA2 and OGIS calculations.
+SurInsulot has no hard dependencies and bundles everything it needs, which includes HOMA2 and OGIS calculations.
 
 ## Quick start
 
@@ -72,21 +69,20 @@ See `?compute_surrogates` for the full schema and units.
 
 By default `compute_surrogates()` expects **glucose in mg/dL** and **insulin in
 uU/mL** (= mU/L), and converts internally where an index needs mmol/L or pmol/L.
-If your data are in other units, just declare them — inputs are normalised
-before anything is computed:
+If your data are in other units, just specify them:
 
 ```r
 compute_surrogates(df,
   glucose_unit  = "mmol/L",   # or "mg/dL" (default)
   insulin_unit  = "pmol/L",   # or "uU/mL" (default)
-  cpeptide_unit = "ng/mL",    # or "nmol/L" (default), "pmol/L"
+  cpeptide_unit = "ng/mL",    # or "nmol/L" (default)
   trig_unit     = "mmol/L",   # or "mg/dL" (default)
   hdl_unit      = "mmol/L",   # or "mg/dL" (default)
   glucagon_unit = "pg/mL")    # or "pmol/L" (default)
 ```
 
 When calling the individual index functions directly, follow the units in each
-help page. The conversion helpers are also exported:
+help page. You can use the conversion helpers too:
 
 ```r
 mgdl_to_mmol_glucose(90)   # 5.0
@@ -99,7 +95,7 @@ Notation: `I0`,`G0` = fasting insulin/glucose; `It`,`Gt` = value at *t* min;
 `Imean`,`Gmean` = trapezoidal mean across the OGTT; `ln` = natural log,
 `log10` = base-10; `wt` = weight (kg).
 
-### Fasting sensitivity / resistance
+### Fasting insulin sensitivity
 
 | Function | Index | Formula | Units |
 |---|---|---|---|
@@ -117,13 +113,6 @@ Notation: `I0`,`G0` = fasting insulin/glucose; `It`,`Gt` = value at *t* min;
 | `egdr_bmi()` | eGDR (BMI) | `19.02 - 0.22 BMI - 3.26 HTN - 0.61 HbA1c` | mg/kg/min |
 | `egdr_waist()` | eGDR (waist) | `21.158 - 0.09 WC - 3.407 HTN - 0.551 HbA1c` | mg/kg/min |
 | `egdr_whr()` | eGDR (WHR) | `24.31 - 12.22 WHR - 3.29 HTN - 0.57 HbA1c` | mg/kg/min |
-
-`1 / homa_ir()` gives the reciprocal-HOMA sensitivity index.
-
-### Lipid / anthropometric
-
-| Function | Index | Formula | Units |
-|---|---|---|---|
 | `tg_hdl()` | TG:HDL | `TG / HDL` | mg/dL |
 | `tyg()` | TyG | `ln(TG * G0 / 2)` | mg/dL |
 | `tyg_adjusted()` | TyG-BMI/WC/WHtR/WHR | `TyG * adiposity` | — |
@@ -134,7 +123,7 @@ Notation: `I0`,`G0` = fasting insulin/glucose; `It`,`Gt` = value at *t* min;
 | `lap()` | LAP | `(WC - k) * TG`, k = 65 (M) / 58 (F) | TG mmol/L |
 | `leptin_adiponectin_ratio()` | LAR | `leptin / adiponectin` | ng/mL : ug/mL |
 
-### OGTT sensitivity
+### OGTT insulin sensitivity
 
 | Function | Index | Formula | Units |
 |---|---|---|---|
@@ -183,7 +172,7 @@ DTU HOMA2 Calculator v2.2.4 (bundled). Each returns a data frame of `homa2_b`
 | `cpeptide_glucose_ratio()` | C-peptide:glucose | `CPt / Gt` | CP nmol/L, G mmol/L |
 | `cpi()` | C-peptide index | `(CPt - CP0) / (Gt - G0)` | CP nmol/L, G mmol/L |
 | `insulin_cpeptide_ratio()` | Insulin:C-peptide (molar) | `I0 / (CP0 * 1000)` | I pmol/L, CP nmol/L |
-| `cpeptide_insulin_auc_ratio()` | C-peptide:insulin (AUC, molar) | `(AUC_CP * 1000) / (AUC_I * 6.945)` | — |
+| `cpeptide_insulin_auc_ratio()` | C-peptide:insulin (AUC, molar) | `(AUC_CP * 1000) / (AUC_I * 6.945)` | - |
 
 ### Disposition & glucagon
 
@@ -197,8 +186,7 @@ DTU HOMA2 Calculator v2.2.4 (bundled). Each returns a data frame of `homa2_b`
 
 Many indices are skewed. Pass `transform = TRUE` to `compute_surrogates()` to
 append a Yeo-Johnson-normalised `<index>_yj` column for every index (λ fitted per
-index by maximum likelihood), reproducing the `*_yj` outputs of the reports; the
-fitted λ are stored in `attr(result, "surinsulot_yj_lambda")`. `yeo_johnson()`
+index by maximum likelihood), the fitted λ are stored in `attr(result, "surinsulot_yj_lambda")`. `yeo_johnson()`
 and `yeo_johnson_lambda()` are also exported for standalone use.
 
 ### Helpers
@@ -206,31 +194,6 @@ and `yeo_johnson_lambda()` are also exported for standalone use.
 `auc_trapezoid()`, `iauc_trapezoid()` (total / incremental trapezoidal AUC),
 `guard_ratio()` (NA-safe division), `row_mean()`, and the `*_to_*` unit
 converters.
-
-## Notes on the formulas
-
-- **HOMA2** (`homa2_ir`, `homa2_b`, `homa2_s`, and C-peptide variants) is built
-  in via `homa2_insulin()` / `homa2_cpeptide()` — bilinear interpolation over
-  lookup tables from the Oxford DTU HOMA2 Calculator v2.2.4, since the model has
-  no closed form. `compute_surrogates()` converts fasting insulin to pmol/L at
-  6.945 before the lookup. The tables are vendored from
-  [homa2calc](https://github.com/ZanettaT/homa2calc).
-- **Stumvoll first/second-phase secretion** expect insulin in **pmol/L**,
-  matching Stumvoll (2000) and the analysis code (the GRADE data dictionary's
-  uU/mL label is a documentation slip).
-- **`insulin_cpeptide_ratio()`** returns a *true molar ratio* (~0.1–0.2). The
-  GRADE script computes `(I_pmol / CP_nmol) * 1000`, which is 10⁶× larger; that
-  is rank-preserving (so it does not change the Spearman analyses in the report)
-  but is not a molar ratio. Multiply by `1e6` to reproduce the script's raw
-  numbers.
-- **Gutt / Cederholm** use a base-10 log of mean insulin, as in the source
-  scripts.
-
-## Provenance
-
-The formulas, unit conventions, and column names come from two analysis
-pipelines over the GRADE and DPP (Diabetes Prevention Program) cohorts. This
-package factors that logic into tested, reusable functions.
 
 ## License
 

@@ -2,18 +2,17 @@ Package: SurInsulot
 Title: Surrogate Indices of Insulin Sensitivity and Secretion
 Version: 0.1.0
 Authors@R:
-    person("Zanetta", "Toomata", email = "ztoomata@gmail.com",
+    person("Zanetta", "Toomata", email = "ztoomata@mgh.harvard.edu",
            role = c("aut", "cre"))
-Description: A tidy, dependency-light toolkit for computing surrogate
-    indices of insulin resistance / sensitivity and insulin deficiency /
+Description: A toolkit for computing surrogate
+    indices of insulin sensitivity and insulin
     secretion from fasting bloods and the oral glucose tolerance test
-    (OGTT). It provides one small, documented, vectorised function per
-    index (for example 'homa_ir()', 'quicki()', 'matsuda()', 'igi()',
-    'ogis()'), trapezoidal area-under-the-curve helpers, unit
+    (OGTT). It provides one function per
+    index (e.g., 'homa_ir()', 'quicki()', 'matsuda()', 'igi()',
+    'ogis()'), trapezoidal area-under-the-curve (AUC) helpers, unit
     conversions, and a single 'compute_surrogates()' wrapper that derives
     every estimable index from a data frame. Formulae, units, and primary
-    references are documented for each index so the package doubles as a
-    reproducible reference for how the measures are defined.
+    references are documented for each index.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Depends:
