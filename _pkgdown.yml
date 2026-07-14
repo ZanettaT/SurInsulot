@@ -1,0 +1,42 @@
+url: ~
+template:
+  bootstrap: 5
+
+reference:
+- title: Compute everything
+  desc: One call that derives the whole panel from a data frame.
+  contents:
+  - compute_surrogates
+- title: Fasting sensitivity / resistance
+  contents:
+  - fasting_sensitivity
+  - egdr
+- title: Lipid & anthropometric
+  contents:
+  - lipid_anthro
+- title: OGTT sensitivity
+  contents:
+  - matsuda
+  - gutt_cederholm
+  - stumvoll_isi
+  - avignon
+  - belfiore_ogtt
+  - ogis
+- title: Secretion & beta-cell
+  contents:
+  - secretion
+  - stumvoll_secretion
+  - bigtt_air
+- title: C-peptide
+  contents:
+  - cpeptide
+- title: Disposition & glucagon
+  contents:
+  - disposition_index
+  - glucagon
+- title: Helpers
+  contents:
+  - auc
+  - guard_ratio
+  - row_mean
+  - unit_conversions

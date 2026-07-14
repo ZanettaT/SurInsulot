@@ -1,0 +1,33 @@
+Package: SurInsulot
+Title: Surrogate Indices of Insulin Sensitivity and Secretion
+Version: 0.1.0
+Authors@R:
+    person("Zanetta", "Toomata", email = "ztoomata@gmail.com",
+           role = c("aut", "cre"))
+Description: A tidy, dependency-light toolkit for computing surrogate
+    indices of insulin resistance / sensitivity and insulin deficiency /
+    secretion from fasting bloods and the oral glucose tolerance test
+    (OGTT). It provides one small, documented, vectorised function per
+    index (for example 'homa_ir()', 'quicki()', 'matsuda()', 'igi()',
+    'ogis()'), trapezoidal area-under-the-curve helpers, unit
+    conversions, and a single 'compute_surrogates()' wrapper that derives
+    every estimable index from a data frame. Formulae, units, and primary
+    references are documented for each index so the package doubles as a
+    reproducible reference for how the measures are defined.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Depends:
+    R (>= 3.5.0)
+Imports:
+    stats
+Suggests:
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown
+URL: https://github.com/ZanettaT/SurInsulot
+BugReports: https://github.com/ZanettaT/SurInsulot/issues
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+LazyData: true

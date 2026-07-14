@@ -1,0 +1,148 @@
+---
+title: "Computing insulin surrogate indices with SurInsulot"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Computing insulin surrogate indices with SurInsulot}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(SurInsulot)
+```
+
+## Overview
+
+SurInsulot turns the surrogate indices of insulin sensitivity and secretion
+into small, tested functions. There are two ways to use it:
+
+1. **Call an index directly** when you want one number and full control over
+   units.
+2. **Call `compute_surrogates()`** on a data frame to derive the whole panel at
+   once.
+
+## Units: the one thing to get right
+
+Most disagreements between implementations come down to units. Each function's
+help page states exactly what it expects. The recurring conventions are:
+
+* insulin in **uU/mL** (= mU/L); a few indices (the Stumvoll indices, OGIS) want
+  **pmol/L** and say so,
+* glucose in **mmol/L**, except the mg/dL-based indices (QUICKI, TyG, METS-IR,
+  SPISE, Matsuda, Gutt, CIR, Kadowaki),
+* C-peptide in nmol/L, glucagon and proinsulin in pmol/L.
+
+Converters are provided:
+
+```{r}
+mgdl_to_mmol_glucose(90)
+insulin_uU_to_pmol(10)
+```
+
+With `compute_surrogates()` you don't convert anything yourself: supply your data
+in whatever units you have and declare them with `glucose_unit`, `insulin_unit`,
+`cpeptide_unit`, `trig_unit`, `hdl_unit`, and `glucagon_unit` (the defaults are
+mg/dL glucose and uU/mL insulin). Inputs are normalised before any index is
+computed, so the results are identical regardless of the units you start from.
+
+## Fasting indices
+
+```{r}
+homa_ir(insulin = 12, glucose = 5.56)   # insulin uU/mL, glucose mmol/L
+quicki(insulin = 12, glucose = 100)     # QUICKI uses glucose in mg/dL
+1 / homa_ir(insulin = 12, glucose = 5.56)  # reciprocal-HOMA sensitivity
+```
+
+## From an OGTT curve
+
+The insulinogenic index and the Matsuda index summarise the OGTT. `igi()` works
+at any timepoint; `matsuda_from_curve()` computes the required means for you.
+
+```{r}
+times <- c(0, 30, 60, 90, 120)
+glucose <- c(95, 160, 150, 130, 110)   # mg/dL
+insulin <- c(10, 80, 90, 70, 45)       # uU/mL
+
+igi(insulin_0 = insulin[1], insulin_t = insulin[2],
+    glucose_0 = 95 / 18, glucose_t = 160 / 18)   # 0-30 min, glucose mmol/L
+
+matsuda_from_curve(times, glucose, insulin)             # full curve
+matsuda_from_curve(times, glucose, insulin, upto = 30)  # modified 0-30
+```
+
+Trapezoidal areas are available on their own:
+
+```{r}
+auc_trapezoid(times, glucose)     # total AUC
+iauc_trapezoid(times, glucose)    # incremental (baseline-subtracted) AUC
+```
+
+## The whole panel at once
+
+`compute_surrogates()` takes a data frame using the GRADE/DPP short column names
+and appends one column per estimable index. Missing inputs simply switch off the
+indices that need them.
+
+```{r}
+df <- data.frame(
+  g000 = c(95, 110), g030 = c(160, 190), g120 = c(140, 170),
+  i000 = c(10, 18),  i030 = c(80, 60),
+  trig = c(150, 200), chdl = c(45, 38), bmi = c(29, 34), sex = c(1, 2)
+)
+
+out <- compute_surrogates(df, verbose = FALSE)
+round(out[, c("homa_ir", "quicki", "tyg", "matsuda_30", "igi_30")], 3)
+```
+
+The names of the computed indices are recorded as an attribute:
+
+```{r}
+attr(out, "surinsulot_computed")
+```
+
+## Disposition indices
+
+A disposition index is secretion scaled by sensitivity — just their product.
+Pass a secretion surrogate and a *sensitivity* surrogate (higher = more
+sensitive):
+
+```{r}
+ig  <- igi(insulin_0 = 10, insulin_t = 80, glucose_0 = 5.3, glucose_t = 8.9)
+mat <- matsuda(glucose_0 = 95, insulin_0 = 10,
+               glucose_mean = 140, insulin_mean = 60)
+disposition_index(secretion = ig, sensitivity = mat)   # oral DI (Matsuda)
+```
+
+## HOMA2
+
+HOMA2 has no closed-form equation (the Oxford DTU model's constants were never
+published), so SurInsulot bundles the DTU Calculator v2.2.4 reference tables and
+interpolates over them. The three input modes are available directly, and
+`compute_surrogates()` adds `homa2_ir`, `homa2_b_ins`, and `homa2_s` (plus the
+C-peptide variants) automatically.
+
+```{r}
+homa2_insulin(glucose = 5.0, insulin = 60)      # glucose mmol/L, insulin pmol/L
+homa2_cpeptide(glucose = 5.0, cpeptide = 0.7)   # C-peptide nmol/L
+```
+
+Grid-point inputs reproduce the official DTU calculator exactly; values outside
+the valid range (glucose 3–25 mmol/L, insulin 20–400 pmol/L, C-peptide
+0.2–3.5 nmol/L) return `NA`.
+
+## Optional Yeo-Johnson transform
+
+Many indices are right-skewed, which matters for parametric models. Passing
+`transform = TRUE` appends a Yeo-Johnson-normalised `<index>_yj` column for each
+index, with lambda fitted per index by maximum likelihood (the fitted values are
+stored in `attr(out, "surinsulot_yj_lambda")`). The transform is also available
+standalone:
+
+```{r}
+x <- c(1, 2, 2, 3, 5, 8, 13, 21, 34, 55)
+lam <- yeo_johnson_lambda(x)
+round(yeo_johnson(x, lam), 3)
+```
+
+When cross-validating, fit lambda on the training fold only, to avoid leakage.
