@@ -1,5 +1,5 @@
 
-# SurInsulot <img src="man/figures/SurInsulot_logo.png" align="right" height="120" alt="SurInsulot hex logo" />
+# SurInsulot <img src="man/figures/SurInsulot_logo.png" align="right" height="140" alt="SurInsulot hex logo" />
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/ZanettaT/SurInsulot/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ZanettaT/SurInsulot/actions/workflows/R-CMD-check.yaml)
@@ -197,4 +197,4 @@ converters.
 
 ## License
 
-MIT © Zanetta Toomata. See [LICENSE.md](LICENSE.md).
+MIT © Zanetta Toomata. See [LICENSE](LICENSE).
