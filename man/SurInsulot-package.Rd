@@ -68,7 +68,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Zanetta Toomata \email{ztoomata@gmail.com}
+\strong{Maintainer}: Zanetta Toomata \email{ztoomata@mgh.harvard.edu}
 
 }
 \keyword{internal}
