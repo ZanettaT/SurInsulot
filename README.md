@@ -15,7 +15,7 @@ whole panel from a data frame.
 ## Installation
 
 ```r
-# install.packages("remotes")
+# install SurInsulot
 remotes::install_github("ZanettaT/SurInsulot")
 ```
 
