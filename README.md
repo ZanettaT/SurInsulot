@@ -3,8 +3,6 @@
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/ZanettaT/SurInsulot/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ZanettaT/SurInsulot/actions/workflows/R-CMD-check.yaml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-<!-- badges: end -->
 
 Compute **Sur**rogates for **Insul**in sensitivity, insulin secretion, or beta-cell function, from fasting bloods and the oral
 glucose tolerance test (OGTT).
